@@ -2,9 +2,7 @@ require("vioplot")
 require("igraph")
 require("plyr")
 require("ggplot2")
-#require("iRefR")
 
-#require("sharpshootR")
 
 setwd("~/Dropbox/school/research/nevada_donor_networks/")
 
@@ -12,10 +10,10 @@ state_fed_2011.df <- read.csv("FollowTheMoneyDownload20151103(101131).csv", head
 
 state_fed_2011.df <- state_fed_2011.df[-which(state_fed_2011.df$Amount<0), ]
 
-# Number of doners: 23281
+
 n.donors <- length(unique(state_fed_2011.df$Contributor.id))
 
-#Number of Candidates: 176
+
 n.candidates <- length(unique(state_fed_2011.df$Candidate.id))
 
 #list of donor->candidate edges
@@ -25,75 +23,10 @@ list.of.donations <- data.frame(state_fed_2011.df$Contributor.id, state_fed_2011
 donation.network <- matrix(nrow=n.candidates+n.donors, ncol=n.candidates+n.donors, 0)
 
 
-
-# Recreate id's for donors and donies.
-
-## contributor.ordered.id <- 1:n.donors
-## candidate.ordered.id <- (n.donors+1):n.donors+n.candidates
-
-
-## contributor.order <- order(list.of.donations[,1])
-## candidate.order <- order(list.of.donations[,2])
-
-## unique.contributor.id <- unique(list.of.donations[,1])
-## unique.candidate.id <- unique(list.of.donations[,2])
-
-
-## index <- 1
-
-
-## for(i in 1:(length(contributor.order)-1)){
-##     if(list.of.donations[,1][contributor.order[i]] != (list.of.donations[, 1][contributor.order[i+1]])){
-##         list.of.donations[,1][contributor.order[i]] <- index
-        
-##         index = index + 1
-##             }
-
-##     else{
-##         list.of.donations[,1][contributor.order[i]] <- index
-##    }
-## }
-        
-
-## for(i in 1:(length(candidate.order)-1)){
-##     if(list.of.donations[,2][candidate.order[i]] != (list.of.donations[, 2][candidate.order[i+1]])){
-##         list.of.donations[,2][candidate.order[i]] <- index
-        
-##         index = index + 1
-##             }
-
-##     else{
-##         list.of.donations[,2][candidate.order[i]] <- index
-##    }
-## }
-
-
-
-
-
-
-#Add edge from donor to candidate.
-#donation.network <- apply(list.of.donations, 1, function(donor.candidate){
-
-#    print(donor.candidate)
-    
-#    donation.network[donor.candidate[1],donor.candidate[2]] <- 1})
-
-
-## for(i in state_fed_2011.df$Candidate.id){
-
-##     state_fed_2011.df$Contributor
-
-## }
-
-
 is.false <- function(truth.val){
 
     return(!truth.val)
 }
-
-
-#donation.matrix <- graph.edgelist(as.matrix(data.frame(state_fed_2011.df$Contributor.id, state_fed_2011.df$Candidate.id)))
 
 
 donation.matrix <- (as.matrix(data.frame(state_fed_2011.df$Contributor.id, state_fed_2011.df$Candidate.id)))
@@ -129,18 +62,8 @@ for(candidate.1 in unique(donation.matrix[,2])){
 
 
 
-# plot(graph.adjacency(as.matrix(shared.contrib)))
-
-
-# Old graphing code. TODO: modify so works with new stuff.
-#ifelse(1:length(V(reduced.final.graph)$name)%in%latent.nodes, 1, 
-#				ifelse(1:length(V(reduced.final.graph)$name)%in%output.nodes, 3, 
-#					ifelse(1:length(V(reduced.final.graph)$name)%in%input.nodes, 2, 0)))
-
 
 igraph.donated <- graph.adjacency(as.matrix(shared.contrib))
-
-#
 
 
 party.color.name <- as.numeric(V(igraph.donated)$name)
@@ -163,7 +86,7 @@ barplot(table(state_fed_2011.df$Date), main="Contributions by Date, Jan 2011- De
 plot(density(state_fed_2011.df$Amount), "Density Plot of Amount Contributed", ylab="Density", xlab="Amount Contributed")
 
 
-#210 candidates received less than the amount which requires reporting (less than 100 dollars)
+#candidates receiving  less than the amount which requires reporting (less than 100 dollars)
 state_fed_2011.df[which((state_fed_2011.df$Amount)==-25000.0),]
 
 
@@ -182,48 +105,25 @@ pie(table(state_fed_2011.df$General_Party), main="Proportion of Number of Contri
 
 # Amount donated by party affiliation:
 
-#boxplot(state_fed_2011.df$Amount~state_fed_2011.df$General_Party, main="Proportion of Contributions by Party")
-
-
-
 with(state_fed_2011.df, vioplot(Amount[General_Party=="Democratic"], Amount[General_Party=="Republican"], Amount[General_Party=="Nonpartisan"], Amount[General_Party=="Third-Party"], names=c("Democratic", "Republican", "Nonpartisan","Third-Party")))
 title("Size of Contributions Received by Party")
 
 
 
-# Number of candidates: 176
+# Number of candidates: 
 length(unique(state_fed_2011.df$Candidate))
 
 
-# Number of Donors: 
-
 # Ten most frequent donors: 
-#barplot(tail(sort(table(((state_fed_2011.df$Contributor)))),10), main="Ten Most Frequent Contributors", ylab="Frequency", xlab="Donor")
-
 
 ggplot(data=data.frame(Donor=as.factor(names(tail(sort(table(((state_fed_2011.df$Contributor)))),10))), N.Donations=tail(sort(table(((state_fed_2011.df$Contributor)))),10)), aes(Donor,N.Donations), fill=General_Industry) + geom_bar(stat="identity", position="dodge")+theme(axis.text.x=element_text(angle=65,vjust=1,hjust=1))+ggtitle("Ten Most Frequent Contributors")
 
 
 
 # Most frequent industries (excluding uncoded):
-#barplot(tail(sort(table(((state_fed_2011.df$General_Industry)))),10)[-10], main="Most Frequent Industries (Excluding Uncoded):", ylab="Frequency", xlab="Industry")
-
-
-
-
-#barplot(tail(sort(table(((state_fed_2011.df$General_Industry)))),10)[-10], main="Most Frequent Industries (Excluding Uncoded):", ylab="Frequency", xlab="Industry")
-
 
 ggplot(data=data.frame(Industry=as.factor(names(tail(sort(table(state_fed_2011.df$General_Industry)),10)[-10])), N.Donations=tail(sort(table(((state_fed_2011.df$General_Industry)))),10)[-10]), aes(Industry,N.Donations), fill=General_Industry) + geom_bar(stat="identity", position="dodge")+theme(axis.text.x=element_text(angle=45,vjust=1,hjust=1))+ggtitle("Most Frequent Industries (Excluding Uncoded):")
 
-
-
-
-
-
-
-
-#pdf("at_least_one_common.pdf")
 
 plot(igraph.donated, vertex.size=2, edge.width=1, edge.arrow.size=0, vertex.label=NA, vertex.color=party.color.id, vertex.frame.color=NA, layout=layout.fruchterman.reingold(igraph.donated),main="Candidates sharing at Least One Common Contributor")
 
@@ -232,7 +132,6 @@ legend("topright", pch=16, col=c("blue","red","green"), legend=c("Democrat","Rep
 
 
 dev.off()
-
 
 
 #### State wide offices only (no fed).
@@ -282,30 +181,10 @@ barplot(table(state_wide_contrib.df$Election_Year), main="Contributions by Year 
 
 contribution_range <- ddply(state_wide_contrib.df, .(Election_Year), function(data){data.frame(Mean_Donation=mean(data$Amount), Median_Donation=median(data$Amount), Sd_Donation=sd(data$Amount))})
 
-#with(contribution_range, ggplot(contribution_range, main="Mean and Median Contribution Size by Year")+ aes(x=Election_Year, y=Mean_Donation) + geom_point(aes(x=Election_Year, y=Mean_Donation), colour=1)+geom_point(aes(x=Election_Year, y=Median_Donation), colour=2))
-
-
-
 ggplot(state_wide_contrib.df, aes(y=Amount, x=as.factor(Election_Year))) + geom_boxplot()+ggtitle("Boxplot: Size of Contributions by Year (State Offices)")+xlab("Election Year")+ylab("Size of Contribution")
 
 
-
-
-
-
-
-#ggplot(state_wide_contrib.df, aes(y=Amount, x=as.factor(Election_Year)), "Amount Contributed by Year") + geom_boxplot()
-
-
-#+geom_errorbar(ymin=c(Mean_Donation-2*Sd_Donation), ymax=c(Mean_Donation+2*Sd_Donation), colour=3)
-
-
-
-
-
-
 with(ddply(state_wide_contrib.df, .(Election_Year, General_Party), function(data){data.frame(Total_Donated=sum(data$Amount))}), ggplot(, aes(x=Election_Year, y=Total_Donated))+ geom_point(aes(colour=General_Party)) + geom_line(aes(colour=General_Party)))+ggtitle("Total Donated to Party Per Year (State Offices)")+xlab("Election Year")+ylab("Total Donated")
-
 
 
 with(ddply(state_wide_contrib.df, .(Election_Year, Incumbency_Status), function(data){data.frame(Total_Donated=sum(data$Amount))}), ggplot(, aes(x=Election_Year, y=Total_Donated))+ geom_point(aes(colour=Incumbency_Status)) + geom_line(aes(colour=Incumbency_Status)))+ggtitle("Total Donated by Incumbency Status Per Year (State Offices)")+xlab("Election Year")+ylab("Total Donated")
@@ -336,19 +215,16 @@ other.candidates <- state_wide_contrib.df$Candidate[state_wide_contrib.df$Genera
 
 
  length(other.candidates)
-# 3896
+
  length(repub.candidates)
-# 27534
+
  length(dem.candidates)
-# 33922
+
 
 
 pdf("state_donation_network_by_year.pdf")
 #Donor Donnie network plots by year.
 ddply(contrib.by.year, .(Election_Year), function(data){
-
-#print(head(V()))
-
 
 
 subgraph <- graph.data.frame(data[,-1])
@@ -360,10 +236,11 @@ plot(subgraph, vertex.size=2, edge.width=1, edge.arrow.size=.05, vertex.label=NA
 legend("topright", pch=16, col=c("blue","red","green", "orange"), legend=c("Democrat","Republican","Other", "Contributor"))
 
 })
+
 dev.off()
 
 
-#210 candidates received less than the amount which requires reporting (less than 100 dollars)
+#Candidates receiving  less than the amount which requires reporting (less than 100 dollars)
 state_wide_contrib.df[which((state_wide_contrib.df$Amount)==-25000.0),]
 
 
@@ -382,30 +259,23 @@ pie(table(state_wide_contrib.df$General_Party), main="Proportion of Total Number
 
 # Amount donated by party affiliation:
 
-#boxplot(state_wide_contrib.df$Amount~state_wide_contrib.df$General_Party, main="Amount Donated by Party")
-
-
-
 with(state_wide_contrib.df, vioplot(Amount[General_Party=="Democratic"], Amount[General_Party=="Republican"], Amount[General_Party=="Nonpartisan"], Amount[General_Party=="Third-Party"], names=c("Democratic", "Republican", "Nonpartisan","Third-Party")))
 title("Size of Contributions Received by Party (State Offices)")
 
 
 
-# Number of candidates: 176
+# Number of candidates: 
 length(unique(state_wide_contrib.df$Candidate))
 
 
 # Number of Donors: 
 
 # Ten most frequent donors: 
-#barplot(tail(sort(table(((state_wide_contrib.df$Contributor)))),10), main="Ten Most Frequent Contributors", ylab="Frequency", xlab="Donor")
 
 ggplot(data=data.frame(Donor=as.factor(names(tail(sort(table(((state_wide_contrib.df$Contributor)))),10))), N.Donations=tail(sort(table(((state_wide_contrib.df$Contributor)))),10)), aes(Donor,N.Donations), fill=General_Industry) + geom_bar(stat="identity", position="dodge")+theme(axis.text.x=element_text(angle=65,vjust=1,hjust=1))+ggtitle("Ten Most Frequent Contributors (State Offices)")
 
 
 # Most frequent industries (excluding uncoded):
-#barplot(tail(sort(table(((state_wide_contrib.df$General_Industry)))),10)[-10], main="Most Frequent Industries (Excluding Uncoded):", ylab="Frequency", xlab="Industry")
-
 
 ggplot(data=data.frame(Industry=as.factor(names(tail(sort(table(((state_wide_contrib.df$General_Industry)))),10)[-10])), N.Donations=tail(sort(table(((state_wide_contrib.df$General_Industry)))),10)[-10]), aes(Industry,N.Donations), fill=General_Industry) + geom_bar(stat="identity", position="dodge")+theme(axis.text.x=element_text(angle=45,vjust=1,hjust=1))+ggtitle("Most Frequent Industries (State Offices and Excluding Uncoded):")
 
